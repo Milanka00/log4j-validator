@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -23,7 +25,8 @@ import java.util.TreeSet;
  */
 public class Log4j2Validator {
 
-    private static final String UNUSED_HINT = "If you are not using them, comment or remove these entries.";
+    private static final String INVALID_HEADER =
+            "Invalid syntax: These properties are not recognized by Log4j2. If you are not using them, comment or remove these entries.";
 
     public static void main(String[] args) {
         System.setProperty("log4j2.statusLoggerLevel", "OFF");
@@ -65,23 +68,40 @@ public class Log4j2Validator {
             builder.build();
         } catch (Exception e) {
             exitCode = 1;
+            System.out.println("\n Configuration parse failed (PropertiesConfigurationBuilder):");
+            e.printStackTrace();
         }
 
         // Generic: find properties that remain after Log4j2 extraction (= invalid, cause processRemainingProperties to fail)
         List<String> invalidKeys = findRemainingPropertiesViaExtraction(configFile);
         if (!invalidKeys.isEmpty()) {
-            System.out.println("Invalid syntax (properties Log4j2(2.25.x) does not recognize - would fail in processRemainingProperties):");
-            invalidKeys.forEach(s -> System.out.println("  " + s));
+            System.out.println("\n" + INVALID_HEADER);
+            printGroupedInvalidKeys(invalidKeys);
             exitCode = 1;
-        }
-
-        if (exitCode != 0) {
-            System.out.println(UNUSED_HINT);
         } else {
-            System.out.println("Configuration is valid.");
+            System.out.println("\n Existing Configurations are valid.");
         }
 
         System.exit(exitCode);
+    }
+
+    /**
+     * Groups invalid keys by "componentType: componentName"
+     */
+    private static void printGroupedInvalidKeys(List<String> invalidKeys) {
+        Map<String, List<String>> groups = new TreeMap<>();
+        for (String key : invalidKeys) {
+            String[] parts = key.split("\\.", 3);
+            String groupKey = parts.length >= 2 ? parts[0] + ": " + parts[1] : key;
+            groups.computeIfAbsent(groupKey, k -> new ArrayList<>()).add(key);
+        }
+        for (Map.Entry<String, List<String>> e : groups.entrySet()) {
+            System.out.println();
+            System.out.println("  " + e.getKey());
+            for (String prop : e.getValue()) {
+                System.out.println("    " + prop);
+            }
+        }
     }
 
     /**
