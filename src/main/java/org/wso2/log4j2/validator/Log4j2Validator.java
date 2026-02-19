@@ -70,7 +70,7 @@ public class Log4j2Validator {
         // Generic: find properties that remain after Log4j2 extraction (= invalid, cause processRemainingProperties to fail)
         List<String> invalidKeys = findRemainingPropertiesViaExtraction(configFile);
         if (!invalidKeys.isEmpty()) {
-            System.out.println("Invalid syntax (properties Log4j2 does not recognize - would fail in processRemainingProperties):");
+            System.out.println("Invalid syntax (properties Log4j2(2.25.x) does not recognize - would fail in processRemainingProperties):");
             invalidKeys.forEach(s -> System.out.println("  " + s));
             exitCode = 1;
         }
