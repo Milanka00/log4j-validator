@@ -32,19 +32,28 @@ mvn clean package
 
 ## Run
 
-```bash
-# Default file: log4j2.properties in current directory
-java -cp "target/log4j2-validator-1.0.0.jar:target/lib/*" org.wso2.log4j2.validator.Log4j2Validator
+### Standalone JAR (recommended – single file, no lib folder)
 
-# Explicit file
-java -cp "target/log4j2-validator-1.0.0.jar:target/lib/*" org.wso2.log4j2.validator.Log4j2Validator /path/to/log4j2.properties
+```bash
+java -jar target/log4j2-validator-1.0.0-standalone.jar /path/to/log4j2.properties
 ```
 
-From the `repository/conf` directory:
+Example from `repository/conf`:
 
 ```bash
-cd log4j2-validator
-java -cp "target/log4j2-validator-1.0.0.jar:target/lib/*" org.wso2.log4j2.validator.Log4j2Validator ../log4j2.properties
+java -jar log4j2-validator/target/log4j2-validator-1.0.0-standalone.jar log4j2.properties
+```
+
+For other packs: copy `log4j2-validator-1.0.0-standalone.jar` anywhere and run:
+
+```bash
+java -jar log4j2-validator-1.0.0-standalone.jar /path/to/log4j2.properties
+```
+
+### Non-standalone (requires lib folder)
+
+```bash
+java -cp "target/log4j2-validator-1.0.0.jar:target/lib/*" org.wso2.log4j2.validator.Log4j2Validator /path/to/log4j2.properties
 ```
 
 ## Output
