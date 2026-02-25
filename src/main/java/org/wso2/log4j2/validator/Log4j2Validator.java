@@ -46,6 +46,7 @@ public class Log4j2Validator {
 
     private static void validate(File configFile) {
         int exitCode = 0;
+        boolean parseSucceeded = true;
 
         if (System.getProperty("carbon.home") == null) {
             System.setProperty("carbon.home", configFile.getParentFile().getAbsolutePath());
@@ -67,6 +68,7 @@ public class Log4j2Validator {
 
             builder.build();
         } catch (Exception e) {
+            parseSucceeded = false;
             exitCode = 1;
             System.out.println("\n Configuration parse failed (PropertiesConfigurationBuilder):");
             e.printStackTrace();
@@ -78,7 +80,7 @@ public class Log4j2Validator {
             System.out.println("\n" + INVALID_HEADER);
             printGroupedInvalidKeys(invalidKeys);
             exitCode = 1;
-        } else {
+        } else if (parseSucceeded) {
             System.out.println("\n Existing Configurations are valid.");
         }
 
